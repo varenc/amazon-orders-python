@@ -42,7 +42,8 @@ class AmazonOrders:
     def get_order_history(self,
                           year: int = datetime.date.today().year,
                           start_index: Optional[int] = None,
-                          full_details: bool = False) -> List[Order]:
+                          full_details: bool = False, 
+                          count_limit=None) -> List[Order]:
         """
         Get the Amazon order history for the given year.
 
@@ -80,6 +81,10 @@ class AmazonOrders:
                     order = self.config.order_class(order_details_tag, self.config, full_details=True, clone=order)
 
                 orders.append(order)
+
+                if count_limit and len(orders) >= count_limit:
+                    logger.warning(f"Count limit reached: {count_limit}")
+                    return orders
 
             next_page = None
             if start_index is None:
